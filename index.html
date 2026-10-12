@@ -94,7 +94,6 @@ body {
 <body>
 <div class="cidade">CURITIBA · PR</div>
 <div class="rotulo">PAINEL DA CASA</div>
-
 <div id="hora">--:--</div>
 <div id="data">Carregando data...</div>
 
@@ -103,19 +102,15 @@ body {
   <div id="icone" class="icone">🌤️</div>
   <div id="temperatura">--°</div>
   <div id="condicao">Carregando previsão...</div>
-
   <div class="detalhes">
     <div class="detalhe">
-      Sensação
-      <div class="valor" id="sensacao">--°</div>
+      Sensação<div class="valor" id="sensacao">--°</div>
     </div>
     <div class="detalhe">
-      Umidade
-      <div class="valor" id="umidade">--%</div>
+      Umidade<div class="valor" id="umidade">--%</div>
     </div>
     <div class="detalhe">
-      Vento
-      <div class="valor" id="vento">-- km/h</div>
+      Vento<div class="valor" id="vento">-- km/h</div>
     </div>
   </div>
 </div>
@@ -134,25 +129,44 @@ body {
 <script>
 function atualizarRelogio() {
   var agora = new Date();
-  var hora = agora.toLocaleTimeString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
-  });
-  var data = agora.toLocaleDateString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  });
-  document.getElementById("hora").innerHTML = hora;
+  var horaTexto, dataTexto;
+
+  try {
+    horaTexto = agora.toLocaleTimeString("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  } catch (e) {
+    horaTexto = agora.getHours() + ":" +
+      (agora.getMinutes() < 10 ? "0" : "") +
+      agora.getMinutes();
+  }
+
+  try {
+    dataTexto = agora.toLocaleDateString("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+  } catch (e) {
+    dataTexto = agora.getDate() + "/" +
+      (agora.getMonth() + 1) + "/" +
+      agora.getFullYear();
+  }
+
+  document.getElementById("hora").innerHTML = horaTexto;
+  dataTexto = String(dataTexto);
   document.getElementById("data").innerHTML =
-    data.charAt(0).toUpperCase() + data.substring(1);
+    dataTexto.charAt(0).toUpperCase() + dataTexto.substring(1);
 }
 
 function clima(codigo) {
+  codigo = Number(codigo);
+
   if (codigo === 0) return ["☀️", "Céu limpo"];
   if (codigo === 1) return ["🌤️", "Predomínio de sol"];
   if (codigo === 2) return ["⛅", "Parcialmente nublado"];
@@ -162,85 +176,110 @@ function clima(codigo) {
   if (codigo >= 71 && codigo <= 77) return ["❄️", "Neve"];
   if (codigo >= 80 && codigo <= 82) return ["🌧️", "Pancadas de chuva"];
   if (codigo >= 95) return ["⛈️", "Trovoadas"];
+
   return ["🌡️", "Condição variável"];
+}
+
+function mostrarErro(mensagem) {
+  document.getElementById("condicao").innerHTML =
+    "Não foi possível carregar o clima";
+  document.getElementById("status").innerHTML =
+    mensagem || "Falha ao consultar a previsão. Tente novamente.";
 }
 
 function buscarClima() {
   var url = "https://api.open-meteo.com/v1/forecast" +
     "?latitude=-25.4284&longitude=-49.2733" +
-    "&current=temperature_2m,relative_humidity_2m," +
-    "apparent_temperature,wind_speed_10m,weather_code" +
-    "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
+    "&current=temperature_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cwind_speed_10m%2Cweather_code" +
+    "&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min" +
     "&timezone=America%2FSao_Paulo&forecast_days=5";
 
   var req = new XMLHttpRequest();
-  req.open("GET", url, true);
-  req.timeout = 15000;
+
+  try {
+    req.open("GET", url, true);
+  } catch (e) {
+    mostrarErro("Não foi possível iniciar a consulta do clima.");
+    return;
+  }
 
   req.onreadystatechange = function() {
     if (req.readyState !== 4) return;
 
-    if (req.status === 200) {
-      try {
-        var d = JSON.parse(req.responseText);
-        var c = d.current;
-        var info = clima(c.weather_code);
-
-        document.getElementById("temperatura").innerHTML =
-          Math.round(c.temperature_2m) + "°";
-        document.getElementById("icone").innerHTML = info[0];
-        document.getElementById("condicao").innerHTML = info[1];
-        document.getElementById("sensacao").innerHTML =
-          Math.round(c.apparent_temperature) + "°";
-        document.getElementById("umidade").innerHTML =
-          c.relative_humidity_2m + "%";
-        document.getElementById("vento").innerHTML =
-          Math.round(c.wind_speed_10m) + " km/h";
-
-        var nomes = ["Dom", "Seg", "Ter", "Qua",
-                     "Qui", "Sex", "Sáb"];
-        var html = "";
-        var i;
-
-        for (i = 0; i < d.daily.time.length; i++) {
-          var partes = d.daily.time[i].split("-");
-          var dia = new Date(
-            Number(partes[0]),
-            Number(partes[1]) - 1,
-            Number(partes[2]), 12, 0, 0
-          );
-          var desc = clima(d.daily.weather_code[i]);
-
-          html += '<div class="dia">' +
-            nomes[dia.getDay()] +
-            '<div class="icone">' + desc[0] + '</div>' +
-            Math.round(d.daily.temperature_2m_max[i]) +
-            '° / ' +
-            Math.round(d.daily.temperature_2m_min[i]) +
-            '°</div>';
-        }
-
-        document.getElementById("dias").innerHTML = html;
-        document.getElementById("status").innerHTML =
-          "Atualizado · Curitiba, Paraná";
-      } catch (e) {
-        erroClima();
-      }
-    } else {
-      erroClima();
+    if (req.status !== 200) {
+      mostrarErro("Resposta do serviço meteorológico: " + req.status);
+      return;
     }
+
+    var d;
+
+    try {
+      d = JSON.parse(req.responseText);
+    } catch (e) {
+      mostrarErro("A resposta do clima não pôde ser interpretada.");
+      return;
+    }
+
+    if (!d || !d.current || !d.daily ||
+        typeof d.current.temperature_2m === "undefined" ||
+        !d.daily.time ||
+        !d.daily.temperature_2m_max ||
+        !d.daily.temperature_2m_min) {
+      mostrarErro("A resposta do serviço veio incompleta.");
+      return;
+    }
+
+    var c = d.current;
+    var info = clima(c.weather_code);
+
+    document.getElementById("temperatura").innerHTML =
+      Math.round(Number(c.temperature_2m)) + "°";
+    document.getElementById("icone").innerHTML = info[0];
+    document.getElementById("condicao").innerHTML = info[1];
+    document.getElementById("sensacao").innerHTML =
+      Math.round(Number(c.apparent_temperature)) + "°";
+    document.getElementById("umidade").innerHTML =
+      Math.round(Number(c.relative_humidity_2m)) + "%";
+    document.getElementById("vento").innerHTML =
+      Math.round(Number(c.wind_speed_10m)) + " km/h";
+
+    var nomes = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    var html = "";
+    var i;
+
+    for (i = 0; i < d.daily.time.length; i++) {
+      var partes = d.daily.time[i].split("-");
+      var dia = new Date(
+        Number(partes[0]),
+        Number(partes[1]) - 1,
+        Number(partes[2]),
+        12, 0, 0
+      );
+      var desc = clima(d.daily.weather_code[i]);
+
+      html += '<div class="dia">' +
+        nomes[dia.getDay()] +
+        '<div class="icone">' + desc[0] + '</div>' +
+        Math.round(Number(d.daily.temperature_2m_max[i])) +
+        '° / ' +
+        Math.round(Number(d.daily.temperature_2m_min[i])) +
+        '°</div>';
+    }
+
+    document.getElementById("dias").innerHTML = html;
+    document.getElementById("status").innerHTML =
+      "Atualizado · Curitiba, Paraná";
   };
 
-  req.ontimeout = erroClima;
-  req.onerror = erroClima;
-  req.send(null);
-}
+  req.onerror = function() {
+    mostrarErro("Falha de rede ou conexão segura com o serviço do clima.");
+  };
 
-function erroClima() {
-  document.getElementById("condicao").innerHTML =
-    "Não foi possível carregar o clima";
-  document.getElementById("status").innerHTML =
-    "Verifique a conexão e tente novamente";
+  try {
+    req.send(null);
+  } catch (e) {
+    mostrarErro("O Safari não conseguiu iniciar a conexão do clima.");
+  }
 }
 
 atualizarRelogio();
@@ -250,4 +289,3 @@ setInterval(buscarClima, 15 * 60 * 1000);
 </script>
 </body>
 </html>
-
