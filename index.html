@@ -5,151 +5,461 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Painel</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-text-size-adjust:100%; }
-  html, body { height:100%; overflow:hidden; }
+<meta name="format-detection" content="telephone=no">
+
+<title>Painel — Cajuru</title>
+
+<style type="text/css">
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #07101f;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.painel {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.linha {
+  width: 100%;
+  overflow: hidden;
+}
+
+.cartao {
+  background: #1d2132;
+  border: 1px solid #383e55;
+  border-radius: 18px;
+  box-sizing: border-box;
+  padding: 18px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+/* Relógio */
+.cartao-relogio {
+  width: 49%;
+  float: left;
+  min-height: 188px;
+}
+
+#hora {
+  font-size: 72px;
+  font-weight: normal;
+  letter-spacing: -3px;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+#data {
+  margin-top: 20px;
+  font-size: 19px;
+  line-height: 1.25;
+  color: #c7cbd9;
+}
+
+/* Clima atual */
+.cartao-clima {
+  width: 49%;
+  float: right;
+  min-height: 188px;
+}
+
+.cidade {
+  font-size: 18px;
+  color: #c7cbd9;
+  margin-bottom: 14px;
+}
+
+#temperatura {
+  font-size: 58px;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: #ffffff;
+}
+
+#condicao {
+  margin-top: 12px;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+#detalhes {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #c7cbd9;
+}
+
+#status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #f0bd75;
+  line-height: 1.3;
+}
+
+/* Previsão */
+.cartao-previsao {
+  clear: both;
+  min-height: 212px;
+}
+
+.titulo {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: #c7cbd9;
+  font-weight: bold;
+}
+
+#previsao {
+  width: 100%;
+  overflow: hidden;
+}
+
+.dia {
+  float: left;
+  width: 19.2%;
+  min-height: 145px;
+  margin-right: 1%;
+  border-radius: 12px;
+  background: #282d40;
+  text-align: center;
+  padding: 11px 5px;
+  box-sizing: border-box;
+}
+
+.dia-ultimo {
+  margin-right: 0;
+}
+
+.nome-dia {
+  display: block;
+  font-size: 14px;
+  color: #c7cbd9;
+  margin-bottom: 12px;
+}
+
+.icone-dia {
+  display: block;
+  font-size: 28px;
+  height: 38px;
+  line-height: 38px;
+}
+
+.max-dia {
+  display: block;
+  margin-top: 9px;
+  font-size: 21px;
+  color: #ffffff;
+}
+
+.min-dia {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+  color: #aeb5c8;
+}
+
+.chuva-dia {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  color: #aeb5c8;
+}
+
+.aguarde {
+  color: #c7cbd9;
+  font-size: 16px;
+  padding-top: 8px;
+}
+
+/* Rodapé */
+.rodape {
+  clear: both;
+  color: #9299ad;
+  font-size: 11px;
+  text-align: center;
+  padding: 2px 0 8px 0;
+}
+
+/* Layout vertical para iPhone */
+@media screen and (max-width: 600px) {
   body {
-    font-family:-apple-system, "Helvetica Neue", Arial, sans-serif;
-    background:#0b1020;
-    color:#fff;
-    padding:14px;
+    padding: 12px;
   }
-  .grid {
-    height:100%;
-    display:-webkit-flex;
-    display:flex;
-    -webkit-flex-direction:column;
-    flex-direction:column;
-    gap:12px;
+
+  .cartao {
+    border-radius: 17px;
+    padding: 18px;
+    margin-bottom: 12px;
   }
-  .row { display:-webkit-flex; display:flex; gap:12px; }
-  .card {
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    padding:16px;
-    -webkit-flex:1;
-    flex:1;
-    min-height:0;
-    overflow:hidden;
+
+  .cartao-relogio,
+  .cartao-clima {
+    float: none;
+    width: 100%;
+    min-height: 0;
   }
-  .clock-card {
-    -webkit-flex:2.2;
-    flex:2.2;
-    display:-webkit-flex;
-    display:flex;
-    -webkit-flex-direction:column;
-    flex-direction:column;
-    -webkit-justify-content:center;
-    justify-content:center;
+
+  .cartao-relogio {
+    min-height: 158px;
   }
+
+  .cartao-clima {
+    min-height: 220px;
+  }
+
   #hora {
-    font-size:78px;
-    font-weight:200;
-    letter-spacing:-2px;
-    line-height:1;
+    font-size: 64px;
   }
-  #data { font-size:18px; opacity:.75; margin-top:8px; }
-  .weather-main {
-    -webkit-flex:1.4;
-    flex:1.4;
-    display:-webkit-flex;
-    display:flex;
-    -webkit-flex-direction:column;
-    flex-direction:column;
-    -webkit-justify-content:center;
-    justify-content:center;
+
+  #data {
+    font-size: 18px;
   }
-  #cidade { font-size:15px; opacity:.7; }
-  #tempAtual { font-size:52px; font-weight:300; margin-top:6px; }
-  #descricao { font-size:17px; margin-top:6px; }
-  #detalhes { font-size:13px; opacity:.7; margin-top:8px; }
-  .forecast { -webkit-flex:1; flex:1; }
-  .forecast h2, .links h2 {
-    font-size:13px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    opacity:.65;
-    margin-bottom:10px;
+
+  .cartao-previsao {
+    min-height: 0;
   }
-  .days {
-    display:-webkit-flex;
-    display:flex;
-    gap:8px;
-    height:calc(100% - 28px);
+
+  .dia {
+    float: none;
+    width: 100%;
+    min-height: 49px;
+    margin: 0 0 8px 0;
+    padding: 11px 10px;
+    text-align: left;
+    position: relative;
   }
-  .day {
-    -webkit-flex:1;
-    flex:1;
-    background:rgba(255,255,255,.06);
-    border-radius:14px;
-    padding:10px 6px;
-    text-align:center;
-    display:-webkit-flex;
-    display:flex;
-    -webkit-flex-direction:column;
-    flex-direction:column;
-    -webkit-justify-content:space-between;
-    justify-content:space-between;
+
+  .dia-ultimo {
+    margin-bottom: 0;
   }
-  .day .nome { font-size:12px; opacity:.75; }
-  .day .icone { font-size:24px; }
-  .day .max { font-size:18px; font-weight:600; }
-  .day .min { font-size:12px; opacity:.65; }
-  .links { -webkit-flex:.45; flex:.45; }
-  .link-grid {
-    display:-webkit-flex;
-    display:flex;
-    gap:10px;
-    height:calc(100% - 28px);
+
+  .nome-dia {
+    display: inline-block;
+    width: 48px;
+    margin: 0;
+    font-size: 15px;
   }
-  .link {
-    -webkit-flex:1;
-    flex:1;
-    background:rgba(255,255,255,.08);
-    border-radius:14px;
-    display:-webkit-flex;
-    display:flex;
-    -webkit-align-items:center;
-    align-items:center;
-    -webkit-justify-content:center;
-    justify-content:center;
-    text-decoration:none;
-    color:#fff;
-    font-size:14px;
-    text-align:center;
-    padding:8px;
+
+  .icone-dia {
+    display: inline-block;
+    width: 36px;
+    height: auto;
+    line-height: 20px;
+    vertical-align: middle;
+    font-size: 20px;
   }
-  .erro { font-size:13px; opacity:.7; margin-top:10px; }
-  @media (orientation:portrait) {
-    #hora { font-size:62px; }
-    .row { -webkit-flex-direction:column; flex-direction:column; }
-    .clock-card { -webkit-flex:none; flex:none; }
-    .weather-main { -webkit-flex:none; flex:none; }
-    .forecast { min-height:180px; }
-    .links { min-height:70px; }
+
+  .max-dia {
+    display: inline-block;
+    margin: 0;
+    font-size: 18px;
   }
+
+  .min-dia {
+    display: inline-block;
+    margin: 0 0 0 4px;
+    font-size: 15px;
+  }
+
+  .chuva-dia {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    margin: 0;
+    font-size: 13px;
+  }
+}
 </style>
 </head>
+
 <body>
 
-<div class="grid">
+<div class="painel">
 
-  <div class="row">
-    <div class="card clock-card">
-      <div id="hora">--:--</div>
-      <div id="data">Carregando...</div>
+  <div class="linha">
+
+    <div class="cartao cartao-relogio">
+      <div id="hora">00:00</div>
+      <div id="data">Carregando data...</div>
     </div>
 
-    <div class="card weather-main">
-      <div id="cidade">Cajuru, PR</div>
-      <div id="tempAtual">--°</div>
-      <div id="descricao">Carregando previsão...</div>
+    <div class="cartao cartao-clima">
+      <div class="cidade">Cajuru, PR</div>
+      <div id="temperatura">--°</div>
+      <div id="condicao">Buscando previsão...</div>
       <div id="detalhes"></div>
-      <div id="erro" class="erro"></div>
+      <div id="status"></div>
+    </div>
+
+  </div>
+
+  <div class="cartao cartao-previsao">
+    <div class="titulo">PRÓXIMOS 5 DIAS</div>
+
+    <div id="previsao">
+      <div class="aguarde">Carregando previsão do tempo...</div>
     </div>
   </div>
 
-  <div class="card forecast">
-    <h2>Próximos
+  <div class="rodape" id="atualizado">
+    Painel pessoal
+  </div>
+
+</div>
+
+<script type="text/javascript">
+(function () {
+
+  /*
+    CONFIGURAÇÃO DA CIDADE
+    Cajuru, Paraná
+  */
+  var LATITUDE = -23.1375;
+  var LONGITUDE = -48.1769;
+  var FUSO_HORARIO = "America%2FSao_Paulo";
+
+  function colocarTexto(id, texto) {
+    var elemento = document.getElementById(id);
+
+    if (elemento) {
+      elemento.innerHTML = texto;
+    }
+  }
+
+  function doisDigitos(numero) {
+    if (numero < 10) {
+      return "0" + numero;
+    }
+
+    return String(numero);
+  }
+
+  function atualizarRelogio() {
+    var agora = new Date();
+
+    var nomesDias = [
+      "Domingo",
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado"
+    ];
+
+    var nomesMeses = [
+      "janeiro",
+      "fevereiro",
+      "março",
+      "abril",
+      "maio",
+      "junho",
+      "julho",
+      "agosto",
+      "setembro",
+      "outubro",
+      "novembro",
+      "dezembro"
+    ];
+
+    colocarTexto(
+      "hora",
+      doisDigitos(agora.getHours()) + ":" + doisDigitos(agora.getMinutes())
+    );
+
+    colocarTexto(
+      "data",
+      nomesDias[agora.getDay()] + ", " +
+      agora.getDate() + " de " +
+      nomesMeses[agora.getMonth()]
+    );
+  }
+
+  function iconeTempo(codigo) {
+    if (codigo === 0) return "☀";
+    if (codigo === 1) return "◐";
+    if (codigo === 2) return "⛅";
+    if (codigo === 3) return "☁";
+    if (codigo === 45 || codigo === 48) return "≋";
+    if (codigo >= 51 && codigo <= 57) return "☂";
+    if (codigo >= 61 && codigo <= 67) return "☂";
+    if (codigo >= 71 && codigo <= 77) return "❄";
+    if (codigo >= 80 && codigo <= 82) return "☂";
+    if (codigo >= 95 && codigo <= 99) return "⚡";
+
+    return "•";
+  }
+
+  function descricaoTempo(codigo) {
+    if (codigo === 0) return "Céu limpo";
+    if (codigo === 1) return "Predominantemente limpo";
+    if (codigo === 2) return "Parcialmente nublado";
+    if (codigo === 3) return "Nublado";
+    if (codigo === 45 || codigo === 48) return "Neblina";
+    if (codigo >= 51 && codigo <= 57) return "Garoa";
+    if (codigo >= 61 && codigo <= 67) return "Chuva";
+    if (codigo >= 71 && codigo <= 77) return "Neve";
+    if (codigo >= 80 && codigo <= 82) return "Pancadas de chuva";
+    if (codigo >= 95 && codigo <= 99) return "Tempestade";
+
+    return "Previsão disponível";
+  }
+
+  function nomeDiaCurto(dataISO) {
+    var partes = dataISO.split("-");
+    var ano = parseInt(partes[0], 10);
+    var mes = parseInt(partes[1], 10) - 1;
+    var dia = parseInt(partes[2], 10);
+
+    var data = new Date(ano, mes, dia);
+
+    var nomes = [
+      "Dom",
+      "Seg",
+      "Ter",
+      "Qua",
+      "Qui",
+      "Sex",
+      "Sáb"
+    ];
+
+    return nomes[data.getDay()];
+  }
+
+  function mostrarErro(mensagem) {
+    colocarTexto("status", mensagem);
+  }
+
+  function numeroArredondado(valor) {
+    if (valor === null || typeof valor === "undefined") {
+      return "--";
+    }
+
+    return String(Math.round(valor));
+  }
+
+  function carregarClima() {
+    var endereco =
+      "https://api.open-meteo.com/v1/forecast" +
+      "?latitude=" + LATITUDE +
+      "&longitude=" + LONGITUDE +
+      "&current_weather=true" +
+      "&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+      "&timezone=" +
