@@ -1,151 +1,155 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Dashboard iPad Mini</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      background-color: #000000;
-      color: #ffffff;
-      font-family: -apple-system, Helvetica Neue, Helvetica, Arial, sans-serif;
-      overflow: hidden;
-    }
-    .container {
-      display: table;
-      width: 100%;
-      height: 100%;
-      padding: 20px;
-    }
-    .column {
-      display: table-cell;
-      vertical-align: middle;
-      text-align: center;
-      width: 50%;
-    }
-    .border-right {
-      border-right: 1px solid #333333;
-    }
-    
-    /* Relógio */
-    #clock {
-      font-size: 90px;
-      font-weight: 200;
-      letter-spacing: -2px;
-      line-height: 1;
-    }
-    #date {
-      font-size: 22px;
-      color: #8e8e93;
-      margin-top: 15px;
-      text-transform: capitalize;
-    }
-
-    /* Clima */
-    #temp {
-      font-size: 80px;
-      font-weight: 200;
-      line-height: 1;
-    }
-    #weather-desc {
-      font-size: 22px;
-      color: #8e8e93;
-      margin-top: 15px;
-      text-transform: capitalize;
-    }
-    #city {
-      font-size: 16px;
-      color: #636366;
-      margin-top: 5px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Painel</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-text-size-adjust:100%; }
+  html, body { height:100%; overflow:hidden; }
+  body {
+    font-family:-apple-system, "Helvetica Neue", Arial, sans-serif;
+    background:#0b1020;
+    color:#fff;
+    padding:14px;
+  }
+  .grid {
+    height:100%;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+    gap:12px;
+  }
+  .row { display:-webkit-flex; display:flex; gap:12px; }
+  .card {
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:18px;
+    padding:16px;
+    -webkit-flex:1;
+    flex:1;
+    min-height:0;
+    overflow:hidden;
+  }
+  .clock-card {
+    -webkit-flex:2.2;
+    flex:2.2;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+    -webkit-justify-content:center;
+    justify-content:center;
+  }
+  #hora {
+    font-size:78px;
+    font-weight:200;
+    letter-spacing:-2px;
+    line-height:1;
+  }
+  #data { font-size:18px; opacity:.75; margin-top:8px; }
+  .weather-main {
+    -webkit-flex:1.4;
+    flex:1.4;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+    -webkit-justify-content:center;
+    justify-content:center;
+  }
+  #cidade { font-size:15px; opacity:.7; }
+  #tempAtual { font-size:52px; font-weight:300; margin-top:6px; }
+  #descricao { font-size:17px; margin-top:6px; }
+  #detalhes { font-size:13px; opacity:.7; margin-top:8px; }
+  .forecast { -webkit-flex:1; flex:1; }
+  .forecast h2, .links h2 {
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    opacity:.65;
+    margin-bottom:10px;
+  }
+  .days {
+    display:-webkit-flex;
+    display:flex;
+    gap:8px;
+    height:calc(100% - 28px);
+  }
+  .day {
+    -webkit-flex:1;
+    flex:1;
+    background:rgba(255,255,255,.06);
+    border-radius:14px;
+    padding:10px 6px;
+    text-align:center;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+    -webkit-justify-content:space-between;
+    justify-content:space-between;
+  }
+  .day .nome { font-size:12px; opacity:.75; }
+  .day .icone { font-size:24px; }
+  .day .max { font-size:18px; font-weight:600; }
+  .day .min { font-size:12px; opacity:.65; }
+  .links { -webkit-flex:.45; flex:.45; }
+  .link-grid {
+    display:-webkit-flex;
+    display:flex;
+    gap:10px;
+    height:calc(100% - 28px);
+  }
+  .link {
+    -webkit-flex:1;
+    flex:1;
+    background:rgba(255,255,255,.08);
+    border-radius:14px;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center;
+    -webkit-justify-content:center;
+    justify-content:center;
+    text-decoration:none;
+    color:#fff;
+    font-size:14px;
+    text-align:center;
+    padding:8px;
+  }
+  .erro { font-size:13px; opacity:.7; margin-top:10px; }
+  @media (orientation:portrait) {
+    #hora { font-size:62px; }
+    .row { -webkit-flex-direction:column; flex-direction:column; }
+    .clock-card { -webkit-flex:none; flex:none; }
+    .weather-main { -webkit-flex:none; flex:none; }
+    .forecast { min-height:180px; }
+    .links { min-height:70px; }
+  }
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Coluna da Esquerda: Relógio -->
-    <div class="column border-right">
-      <div id="clock">00:00</div>
-      <div id="date">Carregando data...</div>
+<div class="grid">
+
+  <div class="row">
+    <div class="card clock-card">
+      <div id="hora">--:--</div>
+      <div id="data">Carregando...</div>
     </div>
 
-    <!-- Coluna da Direita: Previsão do Tempo -->
-    <div class="column">
-      <div id="temp">--°C</div>
-      <div id="weather-desc">Atualizando clima...</div>
-      <div id="city">Curitiba</div>
+    <div class="card weather-main">
+      <div id="cidade">Cajuru, PR</div>
+      <div id="tempAtual">--°</div>
+      <div id="descricao">Carregando previsão...</div>
+      <div id="detalhes"></div>
+      <div id="erro" class="erro"></div>
     </div>
   </div>
 
-  <script>
-    // 1. Configurações de Localização (Open-Meteo)
-    var LATITUDE = -25.4284;  // Curitiba
-    var LONGITUDE = -49.2733; // Curitiba
-
-    // 2. Mapeamento de Códigos da Open-Meteo para Português
-    function getWeatherDescription(code) {
-      if (code === 0) return "Céu Limpo";
-      if (code === 1 || code === 2 || code === 3) return "Parcialmente Nublado";
-      if (code === 45 || code === 48) return "Nevoeiro";
-      if (code >= 51 && code <= 55) return "Garoa";
-      if (code >= 61 && code <= 65) return "Chuva";
-      if (code >= 80 && code <= 82) return "Pancadas de Chuva";
-      if (code >= 95) return "Temporal";
-      return "Ensolarado";
-    }
-
-    // 3. Atualização do Relógio e Data
-    function updateClock() {
-      var now = new Date();
-      var hours = String(now.getHours());
-      var minutes = String(now.getMinutes());
-      
-      if (hours.length < 2) hours = "0" + hours;
-      if (minutes.length < 2) minutes = "0" + minutes;
-
-      document.getElementById('clock').innerText = hours + ":" + minutes;
-
-      var options = { weekday: 'long', day: 'numeric', month: 'long' };
-      var dateString = now.toLocaleDateString('pt-BR', options);
-      document.getElementById('date').innerText = dateString;
-    }
-
-    // 4. Busca Previsão do Tempo (Open-Meteo - Gratuita sem API Key)
-    function fetchWeather() {
-      var url = "https://api.open-meteo.com/v1/forecast?latitude=" + LATITUDE + 
-                "&longitude=" + LONGITUDE + 
-                "&current_weather=true";
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", url, true);
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var response = JSON.parse(xhr.responseText);
-          var temp = Math.round(response.current_weather.temperature);
-          var code = response.current_weather.weathercode;
-
-          document.getElementById('temp').innerText = temp + "°C";
-          document.getElementById('weather-desc').innerText = getWeatherDescription(code);
-        }
-      };
-      xhr.send();
-    }
-
-    // Loop de Execução
-    updateClock();
-    fetchWeather();
-
-    setInterval(updateClock, 1000);       // Atualiza relógio a cada segundo
-    setInterval(fetchWeather, 600000);   // Atualiza clima a cada 10 minutos
-  </script>
-</body>
-</html>
+  <div class="card forecast">
+    <h2>Próximos
