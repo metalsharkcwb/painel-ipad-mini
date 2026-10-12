@@ -10,6 +10,7 @@
 
 <style>
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   padding: 20px;
@@ -18,20 +19,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
 }
+
 .cidade {
   font-size: 20px;
   letter-spacing: 2px;
   margin-top: 10px;
 }
+
 #hora {
   font-size: 76px;
   font-weight: bold;
   margin-top: 20px;
+  white-space: nowrap;
+  letter-spacing: 1px;
 }
+
 #data {
   font-size: 22px;
   margin-bottom: 25px;
 }
+
 .cartao {
   background: #202d3e;
   border-radius: 16px;
@@ -39,49 +46,65 @@ body {
   margin: 12px auto;
   max-width: 700px;
 }
+
 .rotulo {
   color: #bdcce0;
   font-size: 15px;
   letter-spacing: 1px;
 }
+
 #temperatura {
   font-size: 58px;
   font-weight: bold;
   margin: 10px 0;
 }
-#condicao { font-size: 20px; }
+
+#condicao {
+  font-size: 20px;
+}
+
 .detalhes {
   display: table;
   width: 100%;
   table-layout: fixed;
   margin-top: 20px;
 }
+
 .detalhe {
   display: table-cell;
   padding: 8px 2px;
   font-size: 15px;
 }
+
 .valor {
   font-size: 20px;
   font-weight: bold;
   margin-top: 8px;
 }
+
 .dias {
   display: table;
   width: 100%;
   table-layout: fixed;
 }
+
 .dia {
   display: table-cell;
   padding: 12px 2px;
   font-size: 14px;
 }
-.icone { font-size: 27px; margin: 8px 0; }
+
+.icone {
+  font-size: 27px;
+  margin: 8px 0;
+}
+
 .pe {
   font-size: 12px;
   color: #bdcce0;
   margin: 20px 0;
 }
+
 @media (max-width: 500px) {
   body { padding: 10px; }
   #hora { font-size: 58px; }
@@ -92,8 +115,10 @@ body {
 </head>
 
 <body>
+
 <div class="cidade">CURITIBA · PR</div>
 <div class="rotulo">PAINEL DA CASA</div>
+
 <div id="hora">--:--</div>
 <div id="data">Carregando data...</div>
 
@@ -102,15 +127,21 @@ body {
   <div id="icone" class="icone">🌤️</div>
   <div id="temperatura">--°</div>
   <div id="condicao">Carregando previsão...</div>
+
   <div class="detalhes">
     <div class="detalhe">
-      Sensação<div class="valor" id="sensacao">--°</div>
+      Sensação
+      <div class="valor" id="sensacao">--°</div>
     </div>
+
     <div class="detalhe">
-      Umidade<div class="valor" id="umidade">--%</div>
+      Umidade
+      <div class="valor" id="umidade">--%</div>
     </div>
+
     <div class="detalhe">
-      Vento<div class="valor" id="vento">-- km/h</div>
+      Vento
+      <div class="valor" id="vento">-- km/h</div>
     </div>
   </div>
 </div>
@@ -129,7 +160,8 @@ body {
 <script>
 function atualizarRelogio() {
   var agora = new Date();
-  var horaTexto, dataTexto;
+  var horaTexto;
+  var dataTexto;
 
   try {
     horaTexto = agora.toLocaleTimeString("pt-BR", {
@@ -138,10 +170,15 @@ function atualizarRelogio() {
       minute: "2-digit",
       hour12: false
     });
+
+    // Mantém somente HH:MM, removendo segundos e BRT.
+    horaTexto = horaTexto.substring(0, 5);
+
   } catch (e) {
-    horaTexto = agora.getHours() + ":" +
-      (agora.getMinutes() < 10 ? "0" : "") +
-      agora.getMinutes();
+    var partesHora = agora.toLocaleTimeString().split(":");
+    horaTexto =
+      ("0" + partesHora[0]).slice(-2) + ":" +
+      ("0" + partesHora[1]).slice(-2);
   }
 
   try {
@@ -159,9 +196,11 @@ function atualizarRelogio() {
   }
 
   document.getElementById("hora").innerHTML = horaTexto;
+
   dataTexto = String(dataTexto);
   document.getElementById("data").innerHTML =
-    dataTexto.charAt(0).toUpperCase() + dataTexto.substring(1);
+    dataTexto.charAt(0).toUpperCase() +
+    dataTexto.substring(1);
 }
 
 function clima(codigo) {
@@ -183,12 +222,14 @@ function clima(codigo) {
 function mostrarErro(mensagem) {
   document.getElementById("condicao").innerHTML =
     "Não foi possível carregar o clima";
+
   document.getElementById("status").innerHTML =
     mensagem || "Falha ao consultar a previsão. Tente novamente.";
 }
 
 function buscarClima() {
-  var url = "https://api.open-meteo.com/v1/forecast" +
+  var url =
+    "https://api.open-meteo.com/v1/forecast" +
     "?latitude=-25.4284&longitude=-49.2733" +
     "&current=temperature_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cwind_speed_10m%2Cweather_code" +
     "&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min" +
@@ -234,12 +275,16 @@ function buscarClima() {
 
     document.getElementById("temperatura").innerHTML =
       Math.round(Number(c.temperature_2m)) + "°";
+
     document.getElementById("icone").innerHTML = info[0];
     document.getElementById("condicao").innerHTML = info[1];
+
     document.getElementById("sensacao").innerHTML =
       Math.round(Number(c.apparent_temperature)) + "°";
+
     document.getElementById("umidade").innerHTML =
       Math.round(Number(c.relative_humidity_2m)) + "%";
+
     document.getElementById("vento").innerHTML =
       Math.round(Number(c.wind_speed_10m)) + " km/h";
 
@@ -249,12 +294,14 @@ function buscarClima() {
 
     for (i = 0; i < d.daily.time.length; i++) {
       var partes = d.daily.time[i].split("-");
+
       var dia = new Date(
         Number(partes[0]),
         Number(partes[1]) - 1,
         Number(partes[2]),
         12, 0, 0
       );
+
       var desc = clima(d.daily.weather_code[i]);
 
       html += '<div class="dia">' +
@@ -267,6 +314,7 @@ function buscarClima() {
     }
 
     document.getElementById("dias").innerHTML = html;
+
     document.getElementById("status").innerHTML =
       "Atualizado · Curitiba, Paraná";
   };
@@ -284,8 +332,10 @@ function buscarClima() {
 
 atualizarRelogio();
 setInterval(atualizarRelogio, 1000);
+
 buscarClima();
 setInterval(buscarClima, 15 * 60 * 1000);
 </script>
+
 </body>
 </html>
