@@ -11,146 +11,239 @@
 <style>
 * { box-sizing: border-box; }
 
-body {
+html, body {
   margin: 0;
-  padding: 20px;
+  min-height: 100%;
   background: #101722;
+}
+
+body {
+  padding: 10px 18px 8px;
   color: #f4f7fb;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
 }
 
+.cabecalho {
+  padding: 2px 0 8px;
+}
+
 .cidade {
-  font-size: 20px;
+  font-size: 18px;
   letter-spacing: 2px;
-  margin-top: 10px;
+}
+
+.subtitulo {
+  color: #bdcce0;
+  font-size: 12px;
+  margin-top: 3px;
+  letter-spacing: 1px;
 }
 
 #hora {
-  font-size: 76px;
+  font-size: 58px;
   font-weight: bold;
-  margin-top: 20px;
+  line-height: 1.05;
+  margin-top: 4px;
   white-space: nowrap;
   letter-spacing: 1px;
 }
 
 #data {
-  font-size: 22px;
-  margin-bottom: 25px;
+  color: #cbd7e5;
+  font-size: 14px;
+  margin-top: 3px;
+}
+
+.conteudo {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 10px 0;
+  margin-left: -10px;
+  width: calc(100% + 20px);
+}
+
+.coluna-clima,
+.coluna-previsao {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+  min-width: 0;
 }
 
 .cartao {
-  background: #202d3e;
-  border-radius: 16px;
-  padding: 20px 12px;
-  margin: 12px auto;
-  max-width: 700px;
+  background: #263d55;
+  border-radius: 17px;
+  padding: 14px 12px;
+  margin: 0 auto 8px;
 }
 
 .rotulo {
-  color: #bdcce0;
-  font-size: 15px;
-  letter-spacing: 1px;
+  color: #c7d8e9;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+}
+
+#icone {
+  font-size: 29px;
+  margin: 5px 0 2px;
 }
 
 #temperatura {
-  font-size: 58px;
+  font-size: 49px;
+  line-height: 1.05;
   font-weight: bold;
-  margin: 10px 0;
+  margin: 4px 0;
 }
 
 #condicao {
-  font-size: 20px;
+  font-size: 17px;
 }
 
 .detalhes {
   display: table;
   width: 100%;
   table-layout: fixed;
-  margin-top: 20px;
+  margin-top: 11px;
+  padding-top: 9px;
+  border-top: 1px solid #526b84;
 }
 
 .detalhe {
   display: table-cell;
-  padding: 8px 2px;
-  font-size: 15px;
+  width: 33.33%;
+  padding: 4px 2px;
+  font-size: 12px;
+  color: #c7d8e9;
 }
 
 .valor {
-  font-size: 20px;
+  color: #ffffff;
+  font-size: 16px;
   font-weight: bold;
-  margin-top: 8px;
+  margin-top: 5px;
 }
 
 .dias {
   display: table;
   width: 100%;
   table-layout: fixed;
+  margin-top: 14px;
 }
 
 .dia {
   display: table-cell;
-  padding: 12px 2px;
-  font-size: 14px;
+  width: 20%;
+  vertical-align: top;
+  padding: 8px 1px;
+  font-size: 13px;
 }
 
-.icone {
-  font-size: 27px;
-  margin: 8px 0;
+.dia-nome {
+  font-size: 12px;
+  color: #d2e0ed;
+  font-weight: bold;
+}
+
+.dia-icone {
+  font-size: 23px;
+  margin: 10px 0;
+  line-height: 1.1;
+}
+
+.maxima {
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.minima {
+  color: #c7d8e9;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .pe {
-  font-size: 12px;
-  color: #bdcce0;
-  margin: 20px 0;
+  color: #aabed2;
+  font-size: 11px;
+  margin: 5px 0 3px;
+}
+
+@media (orientation: portrait) {
+  .conteudo {
+    display: block;
+    width: 100%;
+    margin: 0;
+  }
+
+  .coluna-clima,
+  .coluna-previsao {
+    display: block;
+    width: 100%;
+  }
+
+  #hora {
+    font-size: 58px;
+  }
 }
 
 @media (max-width: 500px) {
-  body { padding: 10px; }
-  #hora { font-size: 58px; }
-  #temperatura { font-size: 48px; }
-  .detalhe { font-size: 12px; }
+  body { padding: 8px; }
+  #hora { font-size: 48px; }
+  #temperatura { font-size: 44px; }
+  .valor { font-size: 14px; }
+  .dia-icone { font-size: 19px; }
+  .maxima { font-size: 11px; }
+  .minima { font-size: 10px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="cidade">CURITIBA · PR</div>
-<div class="rotulo">PAINEL DA CASA</div>
-
-<div id="hora">--:--</div>
-<div id="data">Carregando data...</div>
-
-<div class="cartao">
-  <div class="rotulo">AGORA EM CURITIBA</div>
-  <div id="icone" class="icone">🌤️</div>
-  <div id="temperatura">--°</div>
-  <div id="condicao">Carregando previsão...</div>
-
-  <div class="detalhes">
-    <div class="detalhe">
-      Sensação
-      <div class="valor" id="sensacao">--°</div>
-    </div>
-
-    <div class="detalhe">
-      Umidade
-      <div class="valor" id="umidade">--%</div>
-    </div>
-
-    <div class="detalhe">
-      Vento
-      <div class="valor" id="vento">-- km/h</div>
-    </div>
-  </div>
+<div class="cabecalho">
+  <div class="cidade">CURITIBA · PR</div>
+  <div class="subtitulo">PAINEL DA CASA</div>
+  <div id="hora">--:--</div>
+  <div id="data">Carregando data...</div>
 </div>
 
-<div class="cartao">
-  <div class="rotulo">PRÓXIMOS DIAS</div>
-  <div class="dias" id="dias">
-    <div class="dia">Consultando previsão...</div>
+<div class="conteudo">
+
+  <div class="coluna-clima">
+    <div class="cartao">
+      <div class="rotulo">AGORA EM CURITIBA</div>
+      <div id="icone">🌤️</div>
+      <div id="temperatura">--°</div>
+      <div id="condicao">Carregando previsão...</div>
+
+      <div class="detalhes">
+        <div class="detalhe">
+          Sensação
+          <div class="valor" id="sensacao">--°</div>
+        </div>
+        <div class="detalhe">
+          Umidade
+          <div class="valor" id="umidade">--%</div>
+        </div>
+        <div class="detalhe">
+          Vento
+          <div class="valor" id="vento">-- km/h</div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="coluna-previsao">
+    <div class="cartao">
+      <div class="rotulo">PRÓXIMOS DIAS</div>
+      <div class="dias" id="dias">
+        <div class="dia">Consultando previsão...</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="pe" id="status">
@@ -169,16 +262,11 @@ function atualizarRelogio() {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false
-    });
-
-    // Mantém somente HH:MM, removendo segundos e BRT.
-    horaTexto = horaTexto.substring(0, 5);
-
+    }).substring(0, 5);
   } catch (e) {
-    var partesHora = agora.toLocaleTimeString().split(":");
     horaTexto =
-      ("0" + partesHora[0]).slice(-2) + ":" +
-      ("0" + partesHora[1]).slice(-2);
+      ("0" + agora.getHours()).slice(-2) + ":" +
+      ("0" + agora.getMinutes()).slice(-2);
   }
 
   try {
@@ -196,8 +284,8 @@ function atualizarRelogio() {
   }
 
   document.getElementById("hora").innerHTML = horaTexto;
-
   dataTexto = String(dataTexto);
+
   document.getElementById("data").innerHTML =
     dataTexto.charAt(0).toUpperCase() +
     dataTexto.substring(1);
@@ -223,8 +311,7 @@ function mostrarErro(mensagem) {
   document.getElementById("condicao").innerHTML =
     "Não foi possível carregar o clima";
 
-  document.getElementById("status").innerHTML =
-    mensagem || "Falha ao consultar a previsão. Tente novamente.";
+  document.getElementById("status").innerHTML = mensagem;
 }
 
 function buscarClima() {
@@ -240,7 +327,7 @@ function buscarClima() {
   try {
     req.open("GET", url, true);
   } catch (e) {
-    mostrarErro("Não foi possível iniciar a consulta do clima.");
+    mostrarErro("Não foi possível consultar o clima.");
     return;
   }
 
@@ -248,7 +335,7 @@ function buscarClima() {
     if (req.readyState !== 4) return;
 
     if (req.status !== 200) {
-      mostrarErro("Resposta do serviço meteorológico: " + req.status);
+      mostrarErro("Erro ao atualizar o clima: " + req.status);
       return;
     }
 
@@ -257,16 +344,14 @@ function buscarClima() {
     try {
       d = JSON.parse(req.responseText);
     } catch (e) {
-      mostrarErro("A resposta do clima não pôde ser interpretada.");
+      mostrarErro("Não foi possível interpretar a previsão.");
       return;
     }
 
-    if (!d || !d.current || !d.daily ||
-        typeof d.current.temperature_2m === "undefined" ||
-        !d.daily.time ||
+    if (!d || !d.current || !d.daily || !d.daily.time ||
         !d.daily.temperature_2m_max ||
         !d.daily.temperature_2m_min) {
-      mostrarErro("A resposta do serviço veio incompleta.");
+      mostrarErro("Dados meteorológicos indisponíveis.");
       return;
     }
 
@@ -305,12 +390,13 @@ function buscarClima() {
       var desc = clima(d.daily.weather_code[i]);
 
       html += '<div class="dia">' +
-        nomes[dia.getDay()] +
-        '<div class="icone">' + desc[0] + '</div>' +
-        Math.round(Number(d.daily.temperature_2m_max[i])) +
-        '° / ' +
-        Math.round(Number(d.daily.temperature_2m_min[i])) +
-        '°</div>';
+        '<div class="dia-nome">' + nomes[dia.getDay()] + '</div>' +
+        '<div class="dia-icone">' + desc[0] + '</div>' +
+        '<div class="maxima">' +
+        Math.round(Number(d.daily.temperature_2m_max[i])) + '°</div>' +
+        '<div class="minima">' +
+        Math.round(Number(d.daily.temperature_2m_min[i])) + '°</div>' +
+        '</div>';
     }
 
     document.getElementById("dias").innerHTML = html;
@@ -331,7 +417,7 @@ function buscarClima() {
 }
 
 atualizarRelogio();
-setInterval(atualizarRelogio, 1000);
+setInterval(atualizarRelogio, 60000);
 
 buscarClima();
 setInterval(buscarClima, 15 * 60 * 1000);
