@@ -1,455 +1,151 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="apple-mobile-web-app-capable" content="no">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<title>Painel da Casa</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Dashboard iPad Mini</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: -apple-system, Helvetica Neue, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .container {
+      display: table;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+    }
+    .column {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+      width: 50%;
+    }
+    .border-right {
+      border-right: 1px solid #333333;
+    }
+    
+    /* Relógio */
+    #clock {
+      font-size: 90px;
+      font-weight: 200;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    #date {
+      font-size: 22px;
+      color: #8e8e93;
+      margin-top: 15px;
+      text-transform: capitalize;
+    }
 
-<style>
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  min-height: 100%;
-  background: #101722;
-}
-
-body {
-  padding: 10px 18px;
-  color: #f4f7fb;
-  font-family: Arial, Helvetica, sans-serif;
-  text-align: center;
-}
-
-.cabecalho {
-  padding: 2px 0 8px;
-}
-
-.cidade {
-  font-size: 18px;
-  letter-spacing: 2px;
-}
-
-.subtitulo {
-  color: #bdcce0;
-  font-size: 12px;
-  margin-top: 3px;
-  letter-spacing: 1px;
-}
-
-#hora {
-  font-size: 58px;
-  font-weight: bold;
-  line-height: 1.05;
-  margin-top: 4px;
-  white-space: nowrap;
-  letter-spacing: 1px;
-}
-
-#data {
-  color: #cbd7e5;
-  font-size: 14px;
-  margin-top: 4px;
-}
-
-.conteudo {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-  border-spacing: 10px 0;
-  margin: 0 -10px;
-  width: calc(100% + 20px);
-}
-
-.coluna-clima,
-.coluna-previsao {
-  display: table-cell;
-  width: 50%;
-  vertical-align: top;
-  min-width: 0;
-}
-
-.cartao {
-  background: #263d55;
-  border-radius: 17px;
-  padding: 14px 12px;
-  margin: 0 auto 8px;
-}
-
-.rotulo {
-  color: #c7d8e9;
-  font-size: 12px;
-  letter-spacing: 1.2px;
-}
-
-#icone {
-  font-size: 29px;
-  margin: 5px 0 2px;
-}
-
-#temperatura {
-  font-size: 49px;
-  line-height: 1.05;
-  font-weight: bold;
-  margin: 4px 0;
-}
-
-#condicao {
-  font-size: 17px;
-}
-
-.detalhes {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-  margin-top: 11px;
-  padding-top: 9px;
-  border-top: 1px solid #526b84;
-}
-
-.detalhe {
-  display: table-cell;
-  width: 33.33%;
-  padding: 4px 2px;
-  font-size: 12px;
-  color: #c7d8e9;
-}
-
-.valor {
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-.dias {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-  margin-top: 14px;
-}
-
-.dia {
-  display: table-cell;
-  width: 20%;
-  vertical-align: top;
-  padding: 8px 1px;
-  font-size: 13px;
-}
-
-.dia-nome {
-  font-size: 12px;
-  color: #d2e0ed;
-  font-weight: bold;
-}
-
-.dia-icone {
-  font-size: 23px;
-  margin: 10px 0;
-  line-height: 1.1;
-}
-
-.maxima {
-  font-size: 13px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.minima {
-  color: #c7d8e9;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.pe {
-  color: #aabed2;
-  font-size: 11px;
-  margin: 5px 0 3px;
-}
-
-@media (orientation: portrait) {
-  .conteudo {
-    display: block;
-    width: 100%;
-    margin: 0;
-  }
-
-  .coluna-clima,
-  .coluna-previsao {
-    display: block;
-    width: 100%;
-  }
-
-  #hora { font-size: 58px; }
-}
-
-@media (max-width: 500px) {
-  body { padding: 8px; }
-  #hora { font-size: 48px; }
-  #temperatura { font-size: 44px; }
-  .valor { font-size: 14px; }
-  .dia-icone { font-size: 19px; }
-  .maxima { font-size: 11px; }
-  .minima { font-size: 10px; }
-}
-</style>
+    /* Clima */
+    #temp {
+      font-size: 80px;
+      font-weight: 200;
+      line-height: 1;
+    }
+    #weather-desc {
+      font-size: 22px;
+      color: #8e8e93;
+      margin-top: 15px;
+      text-transform: capitalize;
+    }
+    #city {
+      font-size: 16px;
+      color: #636366;
+      margin-top: 5px;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="cabecalho">
-  <div class="cidade">CURITIBA · PR</div>
-  <div class="subtitulo">PAINEL DA CASA</div>
-  <div id="hora">--:--</div>
-  <div id="data">Carregando data...</div>
-</div>
+  <div class="container">
+    <!-- Coluna da Esquerda: Relógio -->
+    <div class="column border-right">
+      <div id="clock">00:00</div>
+      <div id="date">Carregando data...</div>
+    </div>
 
-<div class="conteudo">
-
-  <div class="coluna-clima">
-    <div class="cartao">
-      <div class="rotulo">AGORA EM CURITIBA</div>
-      <div id="icone">🌤️</div>
-      <div id="temperatura">--°</div>
-      <div id="condicao">Consultando previsão...</div>
-
-      <div class="detalhes">
-        <div class="detalhe">
-          Sensação
-          <div class="valor" id="sensacao">--°</div>
-        </div>
-        <div class="detalhe">
-          Umidade
-          <div class="valor" id="umidade">--%</div>
-        </div>
-        <div class="detalhe">
-          Vento
-          <div class="valor" id="vento">-- km/h</div>
-        </div>
-      </div>
+    <!-- Coluna da Direita: Previsão do Tempo -->
+    <div class="column">
+      <div id="temp">--°C</div>
+      <div id="weather-desc">Atualizando clima...</div>
+      <div id="city">Curitiba</div>
     </div>
   </div>
 
-  <div class="coluna-previsao">
-    <div class="cartao">
-      <div class="rotulo">PRÓXIMOS DIAS</div>
-      <div class="dias" id="dias">
-        <div class="dia">Consultando previsão...</div>
-      </div>
-    </div>
-  </div>
+  <script>
+    // 1. Configurações de Localização (Open-Meteo)
+    var LATITUDE = -25.4284;  // Curitiba
+    var LONGITUDE = -49.2733; // Curitiba
 
-</div>
-
-<div class="pe" id="status">
-  Curitiba, Paraná · Atualização automática
-</div>
-
-<script>
-function atualizarRelogio() {
-  var agora = new Date();
-  var horaTexto;
-  var dataTexto;
-
-  try {
-    horaTexto = agora.toLocaleTimeString("pt-BR", {
-      timeZone: "America/Sao_Paulo",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-
-    horaTexto = horaTexto.substring(0, 5);
-  } catch (e) {
-    horaTexto =
-      ("0" + agora.getHours()).slice(-2) + ":" +
-      ("0" + agora.getMinutes()).slice(-2);
-  }
-
-  try {
-    dataTexto = agora.toLocaleDateString("pt-BR", {
-      timeZone: "America/Sao_Paulo",
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-  } catch (e) {
-    dataTexto = agora.getDate() + "/" +
-      (agora.getMonth() + 1) + "/" +
-      agora.getFullYear();
-  }
-
-  document.getElementById("hora").innerHTML = horaTexto;
-
-  dataTexto = String(dataTexto);
-  document.getElementById("data").innerHTML =
-    dataTexto.charAt(0).toUpperCase() +
-    dataTexto.substring(1);
-}
-
-function clima(codigo) {
-  codigo = Number(codigo);
-
-  if (codigo === 0) return ["☀️", "Céu limpo"];
-  if (codigo === 1) return ["🌤️", "Predomínio de sol"];
-  if (codigo === 2) return ["⛅", "Parcialmente nublado"];
-  if (codigo === 3) return ["☁️", "Nublado"];
-  if (codigo === 45 || codigo === 48) return ["🌫️", "Neblina"];
-  if (codigo >= 51 && codigo <= 67) return ["🌧️", "Garoa ou chuva"];
-  if (codigo >= 71 && codigo <= 77) return ["❄️", "Neve"];
-  if (codigo >= 80 && codigo <= 82) return ["🌧️", "Pancadas de chuva"];
-  if (codigo >= 95) return ["⛈️", "Trovoadas"];
-
-  return ["🌡️", "Condição variável"];
-}
-
-function mostrarErro(mensagem) {
-  document.getElementById("condicao").innerHTML =
-    "Não foi possível carregar o clima";
-
-  document.getElementById("status").innerHTML = mensagem;
-}
-
-function buscarClima(tentativa) {
-  if (typeof tentativa === "undefined") tentativa = 0;
-
-  var url =
-    "https://api.open-meteo.com/v1/forecast" +
-    "?latitude=-25.4284&longitude=-49.2733" +
-    "&current=temperature_2m,relative_humidity_2m," +
-    "apparent_temperature,wind_speed_10m,weather_code" +
-    "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
-    "&timezone=America%2FSao_Paulo&forecast_days=5";
-
-  var req = new XMLHttpRequest();
-  var terminou = false;
-
-  function falha() {
-    if (terminou) return;
-    terminou = true;
-
-    if (tentativa < 2) {
-      document.getElementById("status").innerHTML =
-        "Tentando reconectar ao serviço meteorológico...";
-
-      setTimeout(function() {
-        buscarClima(tentativa + 1);
-      }, 3000);
-
-    } else {
-      mostrarErro(
-        "Falha de conexão. Verifique a internet e atualize a página."
-      );
-    }
-  }
-
-  try {
-    req.open("GET", url, true);
-    req.timeout = 15000;
-  } catch (e) {
-    falha();
-    return;
-  }
-
-  req.onreadystatechange = function() {
-    if (req.readyState !== 4 || terminou) return;
-
-    if (req.status !== 200) {
-      falha();
-      return;
+    // 2. Mapeamento de Códigos da Open-Meteo para Português
+    function getWeatherDescription(code) {
+      if (code === 0) return "Céu Limpo";
+      if (code === 1 || code === 2 || code === 3) return "Parcialmente Nublado";
+      if (code === 45 || code === 48) return "Nevoeiro";
+      if (code >= 51 && code <= 55) return "Garoa";
+      if (code >= 61 && code <= 65) return "Chuva";
+      if (code >= 80 && code <= 82) return "Pancadas de Chuva";
+      if (code >= 95) return "Temporal";
+      return "Ensolarado";
     }
 
-    var d;
+    // 3. Atualização do Relógio e Data
+    function updateClock() {
+      var now = new Date();
+      var hours = String(now.getHours());
+      var minutes = String(now.getMinutes());
+      
+      if (hours.length < 2) hours = "0" + hours;
+      if (minutes.length < 2) minutes = "0" + minutes;
 
-    try {
-      d = JSON.parse(req.responseText);
-    } catch (e) {
-      falha();
-      return;
+      document.getElementById('clock').innerText = hours + ":" + minutes;
+
+      var options = { weekday: 'long', day: 'numeric', month: 'long' };
+      var dateString = now.toLocaleDateString('pt-BR', options);
+      document.getElementById('date').innerText = dateString;
     }
 
-    if (!d || !d.current || !d.daily ||
-        !d.daily.time ||
-        !d.daily.temperature_2m_max ||
-        !d.daily.temperature_2m_min) {
-      falha();
-      return;
+    // 4. Busca Previsão do Tempo (Open-Meteo - Gratuita sem API Key)
+    function fetchWeather() {
+      var url = "https://api.open-meteo.com/v1/forecast?latitude=" + LATITUDE + 
+                "&longitude=" + LONGITUDE + 
+                "&current_weather=true";
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          var temp = Math.round(response.current_weather.temperature);
+          var code = response.current_weather.weathercode;
+
+          document.getElementById('temp').innerText = temp + "°C";
+          document.getElementById('weather-desc').innerText = getWeatherDescription(code);
+        }
+      };
+      xhr.send();
     }
 
-    terminou = true;
+    // Loop de Execução
+    updateClock();
+    fetchWeather();
 
-    var c = d.current;
-    var info = clima(c.weather_code);
-
-    document.getElementById("temperatura").innerHTML =
-      Math.round(Number(c.temperature_2m)) + "°";
-
-    document.getElementById("icone").innerHTML = info[0];
-    document.getElementById("condicao").innerHTML = info[1];
-
-    document.getElementById("sensacao").innerHTML =
-      Math.round(Number(c.apparent_temperature)) + "°";
-
-    document.getElementById("umidade").innerHTML =
-      Math.round(Number(c.relative_humidity_2m)) + "%";
-
-    document.getElementById("vento").innerHTML =
-      Math.round(Number(c.wind_speed_10m)) + " km/h";
-
-    var nomes = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    var html = "";
-    var i;
-
-    for (i = 0; i < d.daily.time.length; i++) {
-      var partes = d.daily.time[i].split("-");
-
-      var dia = new Date(
-        Number(partes[0]),
-        Number(partes[1]) - 1,
-        Number(partes[2]),
-        12, 0, 0
-      );
-
-      var desc = clima(d.daily.weather_code[i]);
-
-      html += '<div class="dia">' +
-        '<div class="dia-nome">' + nomes[dia.getDay()] + '</div>' +
-        '<div class="dia-icone">' + desc[0] + '</div>' +
-        '<div class="maxima">' +
-        Math.round(Number(d.daily.temperature_2m_max[i])) + '°</div>' +
-        '<div class="minima">' +
-        Math.round(Number(d.daily.temperature_2m_min[i])) + '°</div>' +
-        '</div>';
-    }
-
-    document.getElementById("dias").innerHTML = html;
-
-    document.getElementById("status").innerHTML =
-      "Atualizado · Curitiba, Paraná";
-  };
-
-  req.onerror = falha;
-  req.ontimeout = falha;
-
-  try {
-    req.send(null);
-  } catch (e) {
-    falha();
-  }
-}
-
-atualizarRelogio();
-setInterval(atualizarRelogio, 60000);
-
-buscarClima();
-setInterval(function() {
-  buscarClima();
-}, 15 * 60 * 1000);
-</script>
-
+    setInterval(updateClock, 1000);       // Atualiza relógio a cada segundo
+    setInterval(fetchWeather, 600000);   // Atualiza clima a cada 10 minutos
+  </script>
 </body>
 </html>
