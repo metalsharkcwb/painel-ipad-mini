@@ -87,23 +87,7 @@
   </div>
 
   <script>
-    // 1. Configurações de Localização (Open-Meteo)
-    var LATITUDE = -25.4284;  // Curitiba
-    var LONGITUDE = -49.2733; // Curitiba
-
-    // 2. Mapeamento de Códigos da Open-Meteo para Português
-    function getWeatherDescription(code) {
-      if (code === 0) return "Céu Limpo";
-      if (code === 1 || code === 2 || code === 3) return "Parcialmente Nublado";
-      if (code === 45 || code === 48) return "Nevoeiro";
-      if (code >= 51 && code <= 55) return "Garoa";
-      if (code >= 61 && code <= 65) return "Chuva";
-      if (code >= 80 && code <= 82) return "Pancadas de Chuva";
-      if (code >= 95) return "Temporal";
-      return "Ensolarado";
-    }
-
-    // 3. Atualização do Relógio e Data
+    // 1. Relógio e Data
     function updateClock() {
       var now = new Date();
       var hours = String(now.getHours());
@@ -119,33 +103,48 @@
       document.getElementById('date').innerText = dateString;
     }
 
-    // 4. Busca Previsão do Tempo (Open-Meteo - Gratuita sem API Key)
+    // 2. Busca Clima (Usando wttr.in formatado em JSON)
     function fetchWeather() {
-      var url = "https://api.open-meteo.com/v1/forecast?latitude=" + LATITUDE + 
-                "&longitude=" + LONGITUDE + 
-                "&current_weather=true";
+      var url = "https://wttr.in/Curitiba?format=j1";
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url, true);
+      
       xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var response = JSON.parse(xhr.responseText);
-          var temp = Math.round(response.current_weather.temperature);
-          var code = response.current_weather.weathercode;
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              var data = JSON.parse(xhr.responseText);
+              var condition = data.current_condition[0];
+              
+              var temp = condition.temp_C;
+              var desc = condition.lang_pt ? condition.lang_pt[0].value : condition.weatherDesc[0].value;
 
-          document.getElementById('temp').innerText = temp + "°C";
-          document.getElementById('weather-desc').innerText = getWeatherDescription(code);
+              document.getElementById('temp').innerText = temp + "°C";
+              document.getElementById('weather-desc').innerText = desc;
+            } catch (e) {
+              document.getElementById('weather-desc').innerText = "Erro no formato";
+            }
+          } else {
+            document.getElementById('weather-desc').innerText = "Erro de conexão";
+          }
         }
       };
+
+      xhr.onerror = function () {
+        document.getElementById('weather-desc').innerText = "Falha de rede";
+      };
+
       xhr.send();
     }
 
-    // Loop de Execução
+    // Execução inicial
     updateClock();
     fetchWeather();
 
-    setInterval(updateClock, 1000);       // Atualiza relógio a cada segundo
-    setInterval(fetchWeather, 600000);   // Atualiza clima a cada 10 minutos
+    // Intervalos de atualização
+    setInterval(updateClock, 1000);       // Relógio a cada segundo
+    setInterval(fetchWeather, 600000);   // Clima a cada 10 minutos
   </script>
 </body>
 </html>
