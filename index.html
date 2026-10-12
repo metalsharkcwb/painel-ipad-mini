@@ -166,7 +166,7 @@
         <div class="current-temp-box">
           <span class="weather-icon-large" id="curr-icon">☁️</span>
           <span class="temp-main" id="curr-temp">--°</span>
-          <div class="weather-desc" id="curr-desc">Carregando...</div>
+          <div class="weather-desc" id="curr-desc">Buscando clima...</div>
         </div>
         <div class="details-grid">
           <div class="detail-item">
@@ -197,7 +197,7 @@
   </div>
 
   <script>
-    // 1. Relógio
+    // 1. Relógio NATIVO (Funciona sem internet)
     function updateClock() {
       var now = new Date();
       var hours = String(now.getHours());
@@ -213,7 +213,7 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // 2. Mapeamento de Clima e Ícones
+    // 2. Mapeamento de Clima
     function parseCode(code) {
       if (code === 0) return { desc: "Ensolarado", icon: "☀️" };
       if (code <= 3) return { desc: "Parcialmente Nublado", icon: "⛅" };
@@ -227,60 +227,61 @@
 
     var weekDays = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
-    // 3. Função de Callback JSONP (Funciona no Safari iOS 9 sem bloquear CORS)
-    window.handleWeatherResponse = function(data) {
-      if (!data || !data.current_weather) return;
+    // 3. Busca Clima usando Proxy para contornar SSL do iOS 9
+    function loadWeather() {
+      var apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=-25.4284&longitude=-49.2733&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max&timezone=America%2FSau_Paulo";
+      var proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(apiUrl);
 
-      var current = data.current_weather;
-      var daily = data.daily;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", proxyUrl, true);
 
-      // Atualizar clima atual
-      var weatherInfo = parseCode(current.weathercode);
-      document.getElementById('curr-temp').innerText = Math.round(current.temperature) + "°";
-      document.getElementById('curr-desc').innerText = weatherInfo.desc;
-      document.getElementById('curr-icon').innerText = weatherInfo.icon;
-      
-      document.getElementById('feels-like').innerText = Math.round(current.temperature) + "°";
-      document.getElementById('wind').innerText = Math.round(current.windspeed) + " km/h";
-      document.getElementById('humidity').innerText = (daily.relative_humidity_2m_max ? daily.relative_humidity_2m_max[0] : "85") + "%";
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              var data = JSON.parse(xhr.responseText);
+              var current = data.current_weather;
+              var daily = data.daily;
 
-      // Atualizar Previsão de 5 Dias
-      var forecastHTML = "";
-      for (var i = 0; i < 5; i++) {
-        var dateObj = new Date(daily.time[i] + "T00:00:00");
-        var dayName = weekDays[dateObj.getDay()];
-        var dayCode = parseCode(daily.weathercode[i]);
-        var maxTemp = Math.round(daily.temperature_2m_max[i]);
-        var minTemp = Math.round(daily.temperature_2m_min[i]);
+              var weatherInfo = parseCode(current.weathercode);
+              document.getElementById('curr-temp').innerText = Math.round(current.temperature) + "°";
+              document.getElementById('curr-desc').innerText = weatherInfo.desc;
+              document.getElementById('curr-icon').innerText = weatherInfo.icon;
+              
+              document.getElementById('feels-like').innerText = Math.round(current.temperature) + "°";
+              document.getElementById('wind').innerText = Math.round(current.windspeed) + " km/h";
+              document.getElementById('humidity').innerText = (daily.relative_humidity_2m_max ? daily.relative_humidity_2m_max[0] : "80") + "%";
 
-        forecastHTML += '<div class="forecast-day">' +
-          '<div class="day-name">' + dayName + '</div>' +
-          '<div class="forecast-icon">' + dayCode.icon + '</div>' +
-          '<div class="day-max">' + maxTemp + '°</div>' +
-          '<div class="day-min">' + minTemp + '°</div>' +
-        '</div>';
-      }
-      document.getElementById('forecast-container').innerHTML = forecastHTML;
-    };
+              var forecastHTML = "";
+              for (var i = 0; i < 5; i++) {
+                var dateObj = new Date(daily.time[i] + "T00:00:00");
+                var dayName = weekDays[dateObj.getDay()];
+                var dayCode = parseCode(daily.weathercode[i]);
+                var maxTemp = Math.round(daily.temperature_2m_max[i]);
+                var minTemp = Math.round(daily.temperature_2m_min[i]);
 
-    // 4. Carregador JSONP (Injeta Script dinamicamente)
-    function fetchWeatherJSONP() {
-      var oldScript = document.getElementById('jsonp-weather');
-      if (oldScript) oldScript.parentNode.removeChild(oldScript);
+                forecastHTML += '<div class="forecast-day">' +
+                  '<div class="day-name">' + dayName + '</div>' +
+                  '<div class="forecast-icon">' + dayCode.icon + '</div>' +
+                  '<div class="day-max">' + maxTemp + '°</div>' +
+                  '<div class="day-min">' + minTemp + '°</div>' +
+                '</div>';
+              }
+              document.getElementById('forecast-container').innerHTML = forecastHTML;
+            } catch (e) {
+              document.getElementById('curr-desc').innerText = "Erro ao ler dados";
+            }
+          } else {
+            document.getElementById('curr-desc').innerText = "Sem sinal de clima";
+          }
+        }
+      };
 
-      var url = "https://api.open-meteo.com/v1/forecast?latitude=-25.4284&longitude=-49.2733" +
-                "&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max" +
-                "&timezone=America%2FSau_Paulo" +
-                "&jsonp=handleWeatherResponse";
-
-      var script = document.createElement('script');
-      script.id = 'jsonp-weather';
-      script.src = url;
-      document.body.appendChild(script);
+      xhr.send();
     }
 
-    fetchWeatherJSONP();
-    setInterval(fetchWeatherJSONP, 600000); // Atualiza a cada 10 min
+    loadWeather();
+    setInterval(loadWeather, 600000);
   </script>
 </body>
 </html>
