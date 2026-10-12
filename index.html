@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Painel da Casa</title>
+  <title>Dashboard iPad Mini</title>
   <style>
     * {
       box-sizing: border-box;
@@ -15,278 +15,137 @@
     html, body {
       width: 100%;
       height: 100%;
-      background-color: #0b1019;
+      background-color: #000000;
       color: #ffffff;
       font-family: -apple-system, Helvetica Neue, Helvetica, Arial, sans-serif;
-      overflow-x: hidden;
-      padding: 15px;
+      overflow: hidden;
+    }
+    .container {
+      display: table;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+    }
+    .column {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+      width: 50%;
+    }
+    .border-right {
+      border-right: 1px solid #333333;
     }
     
-    .header {
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .location-subtitle {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      color: #8a99ad;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-    .clock-title {
-      font-size: 42px;
-      font-weight: 300;
+    /* Relógio */
+    #clock {
+      font-size: 90px;
+      font-weight: 200;
+      letter-spacing: -2px;
       line-height: 1;
     }
-    .date-title {
-      font-size: 14px;
-      color: #8a99ad;
-      margin-top: 4px;
+    #date {
+      font-size: 22px;
+      color: #8e8e93;
+      margin-top: 15px;
       text-transform: capitalize;
     }
 
-    .dashboard {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-    }
-    .card-col {
-      display: table-cell;
-      width: 50%;
-      padding: 0 6px;
-      vertical-align: top;
-    }
-
-    .card {
-      background-color: #172232;
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid #233348;
-    }
-
-    .card-header {
-      font-size: 11px;
-      letter-spacing: 1px;
-      color: #8a99ad;
-      text-transform: uppercase;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    /* Clima Atual */
-    .current-temp-box {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .temp-main {
-      font-size: 52px;
+    /* Clima */
+    #temp {
+      font-size: 80px;
       font-weight: 200;
-      display: inline-block;
-      vertical-align: middle;
+      line-height: 1;
     }
-    .weather-icon-large {
-      font-size: 40px;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 10px;
+    #weather-desc {
+      font-size: 22px;
+      color: #8e8e93;
+      margin-top: 15px;
+      text-transform: capitalize;
     }
-    .weather-desc {
+    #city {
       font-size: 16px;
-      color: #c0cedc;
-      margin-top: 2px;
-    }
-
-    .details-grid {
-      display: table;
-      width: 100%;
-      border-top: 1px solid #233348;
-      padding-top: 12px;
-      margin-top: 10px;
-      table-layout: fixed;
-    }
-    .detail-item {
-      display: table-cell;
-      text-align: center;
-      width: 33.33%;
-    }
-    .detail-label {
-      font-size: 11px;
-      color: #8a99ad;
-      margin-bottom: 4px;
-      display: block;
-    }
-    .detail-value {
-      font-size: 15px;
-      font-weight: 500;
-      display: block;
-    }
-
-    /* Previsão 5 Dias */
-    .forecast-grid {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-    }
-    .forecast-day {
-      display: table-cell;
-      text-align: center;
-      width: 20%;
-    }
-    .day-name {
-      font-size: 12px;
-      color: #8a99ad;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .forecast-icon {
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
-    .day-max {
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .day-min {
-      font-size: 12px;
-      color: #6c7d93;
+      color: #636366;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Cabeçalho com Relógio -->
-  <div class="header">
-    <div class="location-subtitle">CURITIBA · PAINEL DA CASA</div>
-    <div class="clock-title" id="clock">00:00</div>
-    <div class="date-title" id="date">Carregando...</div>
-  </div>
-
-  <!-- Cards Horizontais -->
-  <div class="dashboard">
-    <!-- Card Esquerdo: Agora -->
-    <div class="card-col">
-      <div class="card">
-        <div class="card-header">AGORA EM CURITIBA</div>
-        <div class="current-temp-box">
-          <span class="weather-icon-large" id="curr-icon">☁️</span>
-          <span class="temp-main" id="curr-temp">--°</span>
-          <div class="weather-desc" id="curr-desc">Buscando clima...</div>
-        </div>
-        <div class="details-grid">
-          <div class="detail-item">
-            <span class="detail-label">Sensação</span>
-            <span class="detail-value" id="feels-like">--°</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Umidade</span>
-            <span class="detail-value" id="humidity">--%</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Vento</span>
-            <span class="detail-value" id="wind">-- km/h</span>
-          </div>
-        </div>
-      </div>
+  <div class="container">
+    <!-- Coluna da Esquerda: Relógio -->
+    <div class="column border-right">
+      <div id="clock">00:00</div>
+      <div id="date">Carregando data...</div>
     </div>
 
-    <!-- Card Direito: Próximos Dias -->
-    <div class="card-col">
-      <div class="card">
-        <div class="card-header">PREVISÃO PARA OS PRÓXIMOS DIAS</div>
-        <div class="forecast-grid" id="forecast-container">
-          <!-- Conteúdo gerado via script -->
-        </div>
-      </div>
+    <!-- Coluna da Direita: Previsão do Tempo -->
+    <div class="column">
+      <div id="temp">--°C</div>
+      <div id="weather-desc">Atualizando clima...</div>
+      <div id="city">Curitiba</div>
     </div>
   </div>
 
   <script>
-    // 1. Relógio
+    // 1. Configurações de Localização (Open-Meteo)
+    var LATITUDE = -25.4284;  // Curitiba
+    var LONGITUDE = -49.2733; // Curitiba
+
+    // 2. Mapeamento de Códigos da Open-Meteo para Português
+    function getWeatherDescription(code) {
+      if (code === 0) return "Céu Limpo";
+      if (code === 1 || code === 2 || code === 3) return "Parcialmente Nublado";
+      if (code === 45 || code === 48) return "Nevoeiro";
+      if (code >= 51 && code <= 55) return "Garoa";
+      if (code >= 61 && code <= 65) return "Chuva";
+      if (code >= 80 && code <= 82) return "Pancadas de Chuva";
+      if (code >= 95) return "Temporal";
+      return "Ensolarado";
+    }
+
+    // 3. Atualização do Relógio e Data
     function updateClock() {
       var now = new Date();
       var hours = String(now.getHours());
       var minutes = String(now.getMinutes());
+      
       if (hours.length < 2) hours = "0" + hours;
       if (minutes.length < 2) minutes = "0" + minutes;
 
       document.getElementById('clock').innerText = hours + ":" + minutes;
 
       var options = { weekday: 'long', day: 'numeric', month: 'long' };
-      document.getElementById('date').innerText = now.toLocaleDateString('pt-BR', options);
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    // 2. Mapeamento de Clima
-    function parseCode(code) {
-      if (code === 0) return { desc: "Ensolarado", icon: "☀️" };
-      if (code <= 3) return { desc: "Parcialmente Nublado", icon: "⛅" };
-      if (code <= 48) return { desc: "Nevoeiro", icon: "🌫️" };
-      if (code <= 55) return { desc: "Garoa", icon: "🌦️" };
-      if (code <= 65) return { desc: "Chuva", icon: "🌧️" };
-      if (code <= 82) return { desc: "Pancadas de Chuva", icon: "🌧️" };
-      if (code >= 95) return { desc: "Temporal", icon: "⛈️" };
-      return { desc: "Nublado", icon: "☁️" };
+      var dateString = now.toLocaleDateString('pt-BR', options);
+      document.getElementById('date').innerText = dateString;
     }
 
-    var weekDays = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+    // 4. Busca Previsão do Tempo (Open-Meteo - Gratuita sem API Key)
+    function fetchWeather() {
+      var url = "https://api.open-meteo.com/v1/forecast?latitude=" + LATITUDE + 
+                "&longitude=" + LONGITUDE + 
+                "&current_weather=true";
 
-    // 3. Função Global de Leitura dos Dados do Clima (Sem chamadas bloqueadas)
-    window.renderWeatherData = function(data) {
-      if (!data || !data.current_weather) return;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          var temp = Math.round(response.current_weather.temperature);
+          var code = response.current_weather.weathercode;
 
-      var current = data.current_weather;
-      var daily = data.daily;
-
-      var weatherInfo = parseCode(current.weathercode);
-      document.getElementById('curr-temp').innerText = Math.round(current.temperature) + "°";
-      document.getElementById('curr-desc').innerText = weatherInfo.desc;
-      document.getElementById('curr-icon').innerText = weatherInfo.icon;
-      
-      document.getElementById('feels-like').innerText = Math.round(current.temperature) + "°";
-      document.getElementById('wind').innerText = Math.round(current.windspeed) + " km/h";
-      document.getElementById('humidity').innerText = (daily && daily.relative_humidity_2m_max ? daily.relative_humidity_2m_max[0] : "80") + "%";
-
-      var forecastHTML = "";
-      if (daily && daily.time) {
-        for (var i = 0; i < 5; i++) {
-          var dateObj = new Date(daily.time[i] + "T00:00:00");
-          var dayName = weekDays[dateObj.getDay()];
-          var dayCode = parseCode(daily.weathercode[i]);
-          var maxTemp = Math.round(daily.temperature_2m_max[i]);
-          var minTemp = Math.round(daily.temperature_2m_min[i]);
-
-          forecastHTML += '<div class="forecast-day">' +
-            '<div class="day-name">' + dayName + '</div>' +
-            '<div class="forecast-icon">' + dayCode.icon + '</div>' +
-            '<div class="day-max">' + maxTemp + '°</div>' +
-            '<div class="day-min">' + minTemp + '°</div>' +
-          '</div>';
+          document.getElementById('temp').innerText = temp + "°C";
+          document.getElementById('weather-desc').innerText = getWeatherDescription(code);
         }
-      }
-      document.getElementById('forecast-container').innerHTML = forecastHTML;
-    };
-
-    // 4. Carregamento Direto via Script Tag (Evita CORS e bloqueios de Proxy)
-    function fetchWeatherDirect() {
-      var oldScript = document.getElementById('weather-script');
-      if (oldScript) {
-        oldScript.parentNode.removeChild(oldScript);
-      }
-
-      var script = document.createElement('script');
-      script.id = 'weather-script';
-      script.src = "https://api.open-meteo.com/v1/forecast?latitude=-25.4284&longitude=-49.2733&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max&timezone=America%2FSau_Paulo&jsonp=renderWeatherData";
-      
-      script.onerror = function() {
-        document.getElementById('curr-desc').innerText = "Erro na ligação";
       };
-
-      document.body.appendChild(script);
+      xhr.send();
     }
 
-    fetchWeatherDirect();
-    setInterval(fetchWeatherDirect, 600000);
+    // Loop de Execução
+    updateClock();
+    fetchWeather();
+
+    setInterval(updateClock, 1000);       // Atualiza relógio a cada segundo
+    setInterval(fetchWeather, 600000);   // Atualiza clima a cada 10 minutos
   </script>
 </body>
 </html>
