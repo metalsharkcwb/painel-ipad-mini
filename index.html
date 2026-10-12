@@ -1,1 +1,253 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Painel da Casa</title>
+
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 20px;
+  background: #101722;
+  color: #f4f7fb;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+.cidade {
+  font-size: 20px;
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+#hora {
+  font-size: 76px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+#data {
+  font-size: 22px;
+  margin-bottom: 25px;
+}
+.cartao {
+  background: #202d3e;
+  border-radius: 16px;
+  padding: 20px 12px;
+  margin: 12px auto;
+  max-width: 700px;
+}
+.rotulo {
+  color: #bdcce0;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+#temperatura {
+  font-size: 58px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+#condicao { font-size: 20px; }
+.detalhes {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin-top: 20px;
+}
+.detalhe {
+  display: table-cell;
+  padding: 8px 2px;
+  font-size: 15px;
+}
+.valor {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+.dias {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.dia {
+  display: table-cell;
+  padding: 12px 2px;
+  font-size: 14px;
+}
+.icone { font-size: 27px; margin: 8px 0; }
+.pe {
+  font-size: 12px;
+  color: #bdcce0;
+  margin: 20px 0;
+}
+@media (max-width: 500px) {
+  body { padding: 10px; }
+  #hora { font-size: 58px; }
+  #temperatura { font-size: 48px; }
+  .detalhe { font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+<div class="cidade">CURITIBA · PR</div>
+<div class="rotulo">PAINEL DA CASA</div>
+
+<div id="hora">--:--</div>
+<div id="data">Carregando data...</div>
+
+<div class="cartao">
+  <div class="rotulo">AGORA EM CURITIBA</div>
+  <div id="icone" class="icone">🌤️</div>
+  <div id="temperatura">--°</div>
+  <div id="condicao">Carregando previsão...</div>
+
+  <div class="detalhes">
+    <div class="detalhe">
+      Sensação
+      <div class="valor" id="sensacao">--°</div>
+    </div>
+    <div class="detalhe">
+      Umidade
+      <div class="valor" id="umidade">--%</div>
+    </div>
+    <div class="detalhe">
+      Vento
+      <div class="valor" id="vento">-- km/h</div>
+    </div>
+  </div>
+</div>
+
+<div class="cartao">
+  <div class="rotulo">PRÓXIMOS DIAS</div>
+  <div class="dias" id="dias">
+    <div class="dia">Consultando previsão...</div>
+  </div>
+</div>
+
+<div class="pe" id="status">
+  Curitiba, Paraná · Atualização automática
+</div>
+
+<script>
+function atualizarRelogio() {
+  var agora = new Date();
+  var hora = agora.toLocaleTimeString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+  var data = agora.toLocaleDateString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+  document.getElementById("hora").innerHTML = hora;
+  document.getElementById("data").innerHTML =
+    data.charAt(0).toUpperCase() + data.substring(1);
+}
+
+function clima(codigo) {
+  if (codigo === 0) return ["☀️", "Céu limpo"];
+  if (codigo === 1) return ["🌤️", "Predomínio de sol"];
+  if (codigo === 2) return ["⛅", "Parcialmente nublado"];
+  if (codigo === 3) return ["☁️", "Nublado"];
+  if (codigo === 45 || codigo === 48) return ["🌫️", "Neblina"];
+  if (codigo >= 51 && codigo <= 67) return ["🌧️", "Garoa ou chuva"];
+  if (codigo >= 71 && codigo <= 77) return ["❄️", "Neve"];
+  if (codigo >= 80 && codigo <= 82) return ["🌧️", "Pancadas de chuva"];
+  if (codigo >= 95) return ["⛈️", "Trovoadas"];
+  return ["🌡️", "Condição variável"];
+}
+
+function buscarClima() {
+  var url = "https://api.open-meteo.com/v1/forecast" +
+    "?latitude=-25.4284&longitude=-49.2733" +
+    "&current=temperature_2m,relative_humidity_2m," +
+    "apparent_temperature,wind_speed_10m,weather_code" +
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
+    "&timezone=America%2FSao_Paulo&forecast_days=5";
+
+  var req = new XMLHttpRequest();
+  req.open("GET", url, true);
+  req.timeout = 15000;
+
+  req.onreadystatechange = function() {
+    if (req.readyState !== 4) return;
+
+    if (req.status === 200) {
+      try {
+        var d = JSON.parse(req.responseText);
+        var c = d.current;
+        var info = clima(c.weather_code);
+
+        document.getElementById("temperatura").innerHTML =
+          Math.round(c.temperature_2m) + "°";
+        document.getElementById("icone").innerHTML = info[0];
+        document.getElementById("condicao").innerHTML = info[1];
+        document.getElementById("sensacao").innerHTML =
+          Math.round(c.apparent_temperature) + "°";
+        document.getElementById("umidade").innerHTML =
+          c.relative_humidity_2m + "%";
+        document.getElementById("vento").innerHTML =
+          Math.round(c.wind_speed_10m) + " km/h";
+
+        var nomes = ["Dom", "Seg", "Ter", "Qua",
+                     "Qui", "Sex", "Sáb"];
+        var html = "";
+        var i;
+
+        for (i = 0; i < d.daily.time.length; i++) {
+          var partes = d.daily.time[i].split("-");
+          var dia = new Date(
+            Number(partes[0]),
+            Number(partes[1]) - 1,
+            Number(partes[2]), 12, 0, 0
+          );
+          var desc = clima(d.daily.weather_code[i]);
+
+          html += '<div class="dia">' +
+            nomes[dia.getDay()] +
+            '<div class="icone">' + desc[0] + '</div>' +
+            Math.round(d.daily.temperature_2m_max[i]) +
+            '° / ' +
+            Math.round(d.daily.temperature_2m_min[i]) +
+            '°</div>';
+        }
+
+        document.getElementById("dias").innerHTML = html;
+        document.getElementById("status").innerHTML =
+          "Atualizado · Curitiba, Paraná";
+      } catch (e) {
+        erroClima();
+      }
+    } else {
+      erroClima();
+    }
+  };
+
+  req.ontimeout = erroClima;
+  req.onerror = erroClima;
+  req.send(null);
+}
+
+function erroClima() {
+  document.getElementById("condicao").innerHTML =
+    "Não foi possível carregar o clima";
+  document.getElementById("status").innerHTML =
+    "Verifique a conexão e tente novamente";
+}
+
+atualizarRelogio();
+setInterval(atualizarRelogio, 1000);
+buscarClima();
+setInterval(buscarClima, 15 * 60 * 1000);
+</script>
+</body>
+</html>
+
