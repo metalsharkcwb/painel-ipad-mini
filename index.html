@@ -18,7 +18,7 @@
       background-color: #0b1019;
       color: #ffffff;
       font-family: -apple-system, Helvetica Neue, Helvetica, Arial, sans-serif;
-      overflow: hidden;
+      overflow-x: hidden;
       padding: 15px;
     }
     
@@ -102,6 +102,7 @@
       border-top: 1px solid #233348;
       padding-top: 12px;
       margin-top: 10px;
+      table-layout: fixed;
     }
     .detail-item {
       display: table-cell;
@@ -112,16 +113,19 @@
       font-size: 11px;
       color: #8a99ad;
       margin-bottom: 4px;
+      display: block;
     }
     .detail-value {
       font-size: 15px;
       font-weight: 500;
+      display: block;
     }
 
     /* Previsão 5 Dias */
     .forecast-grid {
       display: table;
       width: 100%;
+      table-layout: fixed;
     }
     .forecast-day {
       display: table-cell;
@@ -170,16 +174,16 @@
         </div>
         <div class="details-grid">
           <div class="detail-item">
-            <div class="detail-label">Sensação</div>
-            <div class="detail-value" id="feels-like">--°</div>
+            <span class="detail-label">Sensação</span>
+            <span class="detail-value" id="feels-like">--°</span>
           </div>
           <div class="detail-item">
-            <div class="detail-label">Umidade</div>
-            <div class="detail-value" id="humidity">--%</div>
+            <span class="detail-label">Umidade</span>
+            <span class="detail-value" id="humidity">--%</span>
           </div>
           <div class="detail-item">
-            <div class="detail-label">Vento</div>
-            <div class="detail-value" id="wind">-- km/h</div>
+            <span class="detail-label">Vento</span>
+            <span class="detail-value" id="wind">-- km/h</span>
           </div>
         </div>
       </div>
@@ -190,14 +194,14 @@
       <div class="card">
         <div class="card-header">PREVISÃO PARA OS PRÓXIMOS DIAS</div>
         <div class="forecast-grid" id="forecast-container">
-          <!-- Gerado via script -->
+          <!-- Conteúdo gerado via script -->
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // 1. Relógio NATIVO (Funciona sem internet)
+    // 1. Relógio
     function updateClock() {
       var now = new Date();
       var hours = String(now.getHours());
@@ -227,61 +231,62 @@
 
     var weekDays = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
-    // 3. Busca Clima usando Proxy para contornar SSL do iOS 9
-    function loadWeather() {
-      var apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=-25.4284&longitude=-49.2733&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max&timezone=America%2FSau_Paulo";
-      var proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(apiUrl);
+    // 3. Função Global de Leitura dos Dados do Clima (Sem chamadas bloqueadas)
+    window.renderWeatherData = function(data) {
+      if (!data || !data.current_weather) return;
 
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", proxyUrl, true);
+      var current = data.current_weather;
+      var daily = data.daily;
 
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            try {
-              var data = JSON.parse(xhr.responseText);
-              var current = data.current_weather;
-              var daily = data.daily;
+      var weatherInfo = parseCode(current.weathercode);
+      document.getElementById('curr-temp').innerText = Math.round(current.temperature) + "°";
+      document.getElementById('curr-desc').innerText = weatherInfo.desc;
+      document.getElementById('curr-icon').innerText = weatherInfo.icon;
+      
+      document.getElementById('feels-like').innerText = Math.round(current.temperature) + "°";
+      document.getElementById('wind').innerText = Math.round(current.windspeed) + " km/h";
+      document.getElementById('humidity').innerText = (daily && daily.relative_humidity_2m_max ? daily.relative_humidity_2m_max[0] : "80") + "%";
 
-              var weatherInfo = parseCode(current.weathercode);
-              document.getElementById('curr-temp').innerText = Math.round(current.temperature) + "°";
-              document.getElementById('curr-desc').innerText = weatherInfo.desc;
-              document.getElementById('curr-icon').innerText = weatherInfo.icon;
-              
-              document.getElementById('feels-like').innerText = Math.round(current.temperature) + "°";
-              document.getElementById('wind').innerText = Math.round(current.windspeed) + " km/h";
-              document.getElementById('humidity').innerText = (daily.relative_humidity_2m_max ? daily.relative_humidity_2m_max[0] : "80") + "%";
+      var forecastHTML = "";
+      if (daily && daily.time) {
+        for (var i = 0; i < 5; i++) {
+          var dateObj = new Date(daily.time[i] + "T00:00:00");
+          var dayName = weekDays[dateObj.getDay()];
+          var dayCode = parseCode(daily.weathercode[i]);
+          var maxTemp = Math.round(daily.temperature_2m_max[i]);
+          var minTemp = Math.round(daily.temperature_2m_min[i]);
 
-              var forecastHTML = "";
-              for (var i = 0; i < 5; i++) {
-                var dateObj = new Date(daily.time[i] + "T00:00:00");
-                var dayName = weekDays[dateObj.getDay()];
-                var dayCode = parseCode(daily.weathercode[i]);
-                var maxTemp = Math.round(daily.temperature_2m_max[i]);
-                var minTemp = Math.round(daily.temperature_2m_min[i]);
-
-                forecastHTML += '<div class="forecast-day">' +
-                  '<div class="day-name">' + dayName + '</div>' +
-                  '<div class="forecast-icon">' + dayCode.icon + '</div>' +
-                  '<div class="day-max">' + maxTemp + '°</div>' +
-                  '<div class="day-min">' + minTemp + '°</div>' +
-                '</div>';
-              }
-              document.getElementById('forecast-container').innerHTML = forecastHTML;
-            } catch (e) {
-              document.getElementById('curr-desc').innerText = "Erro ao ler dados";
-            }
-          } else {
-            document.getElementById('curr-desc').innerText = "Sem sinal de clima";
-          }
+          forecastHTML += '<div class="forecast-day">' +
+            '<div class="day-name">' + dayName + '</div>' +
+            '<div class="forecast-icon">' + dayCode.icon + '</div>' +
+            '<div class="day-max">' + maxTemp + '°</div>' +
+            '<div class="day-min">' + minTemp + '°</div>' +
+          '</div>';
         }
+      }
+      document.getElementById('forecast-container').innerHTML = forecastHTML;
+    };
+
+    // 4. Carregamento Direto via Script Tag (Evita CORS e bloqueios de Proxy)
+    function fetchWeatherDirect() {
+      var oldScript = document.getElementById('weather-script');
+      if (oldScript) {
+        oldScript.parentNode.removeChild(oldScript);
+      }
+
+      var script = document.createElement('script');
+      script.id = 'weather-script';
+      script.src = "https://api.open-meteo.com/v1/forecast?latitude=-25.4284&longitude=-49.2733&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max&timezone=America%2FSau_Paulo&jsonp=renderWeatherData";
+      
+      script.onerror = function() {
+        document.getElementById('curr-desc').innerText = "Erro na ligação";
       };
 
-      xhr.send();
+      document.body.appendChild(script);
     }
 
-    loadWeather();
-    setInterval(loadWeather, 600000);
+    fetchWeatherDirect();
+    setInterval(fetchWeatherDirect, 600000);
   </script>
 </body>
 </html>
